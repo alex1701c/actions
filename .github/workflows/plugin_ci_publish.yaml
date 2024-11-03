@@ -110,7 +110,6 @@ jobs:
         run: ctest -V
 
       - name: CPack
-        if: inputs.publish-version
         working-directory: build
         id: cpack
         shell: bash
@@ -120,7 +119,6 @@ jobs:
           echo "filepath=$filepath" >> "$GITHUB_OUTPUT"
       - name: Test install of binary packages
         shell: bash
-        if: inputs.publish-version
         run: |
           binary_file="${{ steps.cpack.outputs.filepath }}"
           # Detect and install using the correct package manager
