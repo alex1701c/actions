@@ -5,6 +5,7 @@ on:
     inputs:
       publish-version:
         description: "new version that should get published"
+        type: string
 
 jobs:
   build:
