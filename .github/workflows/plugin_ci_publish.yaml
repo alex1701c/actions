@@ -6,8 +6,30 @@ on:
       publish-version:
         description: "new version that should get published"
         type: string
+      publish-archive:
+        description: "If a separate archive with submodules should be created"
+        type: boolean
+        default: false
 
 jobs:
+  create-archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Create tar.gz of the repo
+        run: |
+          tar --exclude='.git' --exclude='.github' -czf repo-archive.tar.gz .
+          echo "Archive created: repo-archive.tar.gz"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: repo-archive
+          path: repo-archive.tar.gz
+
   build:
     strategy:
       fail-fast: false
@@ -141,8 +163,10 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: build
-    if: inputs.publish-version
+    needs:
+      - build
+      - create-archive
+    if: always() && inputs.publish-version && needs.build.result == 'success'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -174,4 +198,3 @@ jobs:
           artifacts: ${{ steps.collect_artifacts.outputs.uploaded_files }}
           tag: ${{ inputs.publish-version }}
           generateReleaseNotes: true
-
