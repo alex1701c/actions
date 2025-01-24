@@ -12,8 +12,12 @@ on:
         default: false
 
 jobs:
+
   create-archive:
+    if: ${{ inputs.publish-archive }}
     runs-on: ubuntu-latest
+    env:
+      archivename: ${{ github.event.repository.name }}WithSubmodule.tar.gz
     steps:
       - uses: actions/checkout@v3
         with:
@@ -22,13 +26,13 @@ jobs:
 
       - name: Create tar.gz of the repo
         run: |
-          tar --exclude='.git' --exclude='.github' -czf repo-archive.tar.gz .
-          echo "Archive created: repo-archive.tar.gz"
+          tar --exclude='.git' --exclude='.github' -czf ../$archivename .
+          mv ../$archivename $archivename
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: repo-archive
-          path: repo-archive.tar.gz
+          name: ${{ env.archivename }}
+          path: ${{ env.archivename }}
 
   build:
     strategy:
