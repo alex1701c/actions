@@ -12,12 +12,11 @@ on:
         default: false
 
 jobs:
-
   create-archive:
     if: ${{ inputs.publish-archive }}
     runs-on: ubuntu-latest
     env:
-      archivename: ${{ github.event.repository.name }}WithSubmodule.tar.gz
+      archivename: ${{ github.event.repository.name }}WithSubmodule-${{ inputs.publish-version }}.tar.gz
     steps:
       - uses: actions/checkout@v3
         with:
