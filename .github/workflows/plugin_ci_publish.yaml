@@ -54,6 +54,9 @@ jobs:
           - os:
               image: ubuntu:24.04
             plasma_version: plasma6
+          - os:
+              image: opensuse/tumbleweed
+            plasma_version: plasma5
 
     runs-on: ubuntu-latest
     name: ${{ matrix.os.name }}-${{ matrix.plasma_version }}
