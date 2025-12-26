@@ -151,6 +151,7 @@ jobs:
           binary_file="${{ steps.cpack.outputs.filepath }}"
           # Detect and install using the correct package manager
           if [[ "${{ matrix.os.name }}" == "ubuntu" ]]; then
+            apt update
             apt install -y "$binary_file"
           elif [[ "${{ matrix.os.name }}" == "fedora" ]]; then
             dnf install -y "$binary_file"
