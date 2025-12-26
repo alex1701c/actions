@@ -39,7 +39,7 @@ jobs:
       matrix:
         os:
           - name: ubuntu
-            image: ubuntu:24.10
+            image: ubuntu:25.04
           - name: ubuntu
             image: ubuntu:24.04
           - name: opensuse
@@ -49,7 +49,7 @@ jobs:
         plasma_version: [plasma5, plasma6]
         exclude:
           - os:
-              image: ubuntu:24.10
+              image: ubuntu:25.04
             plasma_version: plasma5
           - os:
               image: ubuntu:24.04
