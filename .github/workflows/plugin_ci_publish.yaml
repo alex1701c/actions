@@ -73,13 +73,23 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          echo "Dependencies for install-${{ matrix.os.name }}-${{ matrix.plasma_version }}"
-          CMD=$(sed -n '/```bash install-${{ matrix.os.name }}-${{ matrix.plasma_version }}/,/```/p' README.md | head -n -1 | tail -n +2 |sed 's/sudo //')
+          readme_os="${{ matrix.os.name }}"
+          if [[ "$readme_os" == fedora* ]]; then
+            readme_os="fedora"
+          fi
+
+          echo "Dependencies for install-${readme_os}-${{ matrix.plasma_version }}"
+          CMD=$(sed -n "/```bash install-${readme_os}-${{ matrix.plasma_version }}/,/```/p" README.md | head -n -1 | tail -n +2 | sed 's/sudo //')
+          if [[ -z "$CMD" ]]; then
+            echo "No dependency block found in README.md for ${readme_os}-${{ matrix.plasma_version }}"
+            exit 1
+          fi
+
           if [[ "${{ matrix.os.name }}" == "ubuntu" ]]; then
             apt update
             export DEBIAN_FRONTEND=noninteractive
             echo 'APT::Get::Assume-Yes "true";' >>  /etc/apt/apt.conf
-          elif [[ "${{ matrix.os.name }}" == "fedora" ]]; then
+          elif [[ "${{ matrix.os.name }}" == "fedora" || "${{ matrix.os.name }}" == "fedora45" ]]; then
             echo "defaultyes=True" >> /etc/dnf/dnf.conf
             dnf install rpm-build
           elif [[ "${{ matrix.os.name }}" == "opensuse" ]]; then
