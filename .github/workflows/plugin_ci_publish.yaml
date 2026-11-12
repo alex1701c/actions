@@ -70,22 +70,27 @@ jobs:
           sparse-checkout: |
             README.md
 
-      - name: Install dependencies
+      - name: Calc readme OS name
         shell: bash
         run: |
           readme_os="${{ matrix.os.name }}"
           if [[ "$readme_os" == fedora* ]]; then
             readme_os="fedora"
+          else
+            readme_os="${{ matrix.os.name }}"
           fi
-
-          echo "Dependencies for install-${readme_os}-${{ matrix.plasma_version }}"
-          CMD=$(sed -n '/```bash install-${readme_os}-${{ matrix.plasma_version }}/,/```/p' README.md | head -n -1 | tail -n +2 |sed 's/sudo //')
+          echo "readme_os=$readme_os" >> $GITHUB_ENV
+      - name: Install dependencies
+        shell: bash
+        run: |
+          echo "Dependencies for install-${{ env.readme_os }}-${{ matrix.plasma_version }}"
+          CMD=$(sed -n '/```bash install-${{ env.readme_os }}-${{ matrix.plasma_version }}/,/```/p' README.md | head -n -1 | tail -n +2 |sed 's/sudo //')
 
           if [[ "${{ matrix.os.name }}" == "ubuntu" ]]; then
             apt update
             export DEBIAN_FRONTEND=noninteractive
             echo 'APT::Get::Assume-Yes "true";' >>  /etc/apt/apt.conf
-          elif [[ "${readme_os}" == "fedora" ]]; then
+          elif [[ "${{ env.readme_os }}" == "fedora" ]]; then
             echo "defaultyes=True" >> /etc/dnf/dnf.conf
             dnf install rpm-build
           elif [[ "${{ matrix.os.name }}" == "opensuse" ]]; then
