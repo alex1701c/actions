@@ -86,14 +86,14 @@ jobs:
           echo "Dependencies for install-${{ env.readme_os }}-${{ matrix.plasma_version }}"
           CMD=$(sed -n '/```bash install-${{ env.readme_os }}-${{ matrix.plasma_version }}/,/```/p' README.md | head -n -1 | tail -n +2 |sed 's/sudo //')
 
-          if [[ "${{ matrix.os.name }}" == "ubuntu" ]]; then
+          if [[ "${{ env.readme_os }}" == "ubuntu" ]]; then
             apt update
             export DEBIAN_FRONTEND=noninteractive
             echo 'APT::Get::Assume-Yes "true";' >>  /etc/apt/apt.conf
           elif [[ "${{ env.readme_os }}" == "fedora" ]]; then
             echo "defaultyes=True" >> /etc/dnf/dnf.conf
             dnf install rpm-build
-          elif [[ "${{ matrix.os.name }}" == "opensuse" ]]; then
+          elif [[ "${{ env.readme_os }}" == "opensuse" ]]; then
             zypper refresh
             CMD=$(echo $CMD | sed 's/zypper/zypper --non-interactive/')
             zypper install -y rpm-build
@@ -135,7 +135,7 @@ jobs:
         working-directory: build/
         shell: bash
         run: |
-          CMAKE_ARGS=".. -DCMAKE_BUILD_TYPE=Release -DCPACK_OS=${{ matrix.os.name }}"
+          CMAKE_ARGS=".. -DCMAKE_BUILD_TYPE=Release -DCPACK_OS=${{ env.readme_os }} -DCPACK_PLASMA_VERSION=${{ matrix.plasma_version }}"
           if [[ "${{ matrix.plasma_version }}" == "plasma6" ]]; then
             CMAKE_ARGS="$CMAKE_ARGS -DBUILD_WITH_QT6=ON"
           else
@@ -163,12 +163,12 @@ jobs:
         run: |
           binary_file="${{ steps.cpack.outputs.filepath }}"
           # Detect and install using the correct package manager
-          if [[ "${{ matrix.os.name }}" == "ubuntu" ]]; then
+          if [[ "${{ env.readme_os }}" == "ubuntu" ]]; then
             apt update
             apt install -y "$binary_file"
-          elif [[ "${{ matrix.os.name }}" == "fedora" ]]; then
+          elif [[ "${{ env.readme_os }}" == "fedora" ]]; then
             dnf install -y "$binary_file"
-          elif [[ "${{ matrix.os.name }}" == "opensuse" ]]; then
+          elif [[ "${{ env.readme_os }}" == "opensuse" ]]; then
             zypper install -y --allow-unsigned-rpm "$binary_file"
           else
             echo "Unsupported OS"
