@@ -46,6 +46,8 @@ jobs:
             image: opensuse/tumbleweed
           - name: fedora
             image: fedora:40
+          - name: fedora45
+            image: fedora:45
         plasma_version: [plasma5, plasma6]
         exclude:
           - os:
