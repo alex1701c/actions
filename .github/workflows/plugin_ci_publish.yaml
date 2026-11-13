@@ -135,7 +135,7 @@ jobs:
         working-directory: build/
         shell: bash
         run: |
-          CMAKE_ARGS=".. -DCMAKE_BUILD_TYPE=Release -DCPACK_OS=${{ env.readme_os }} -DCPACK_PLASMA_VERSION=${{ matrix.plasma_version }}"
+          CMAKE_ARGS=".. -DCMAKE_BUILD_TYPE=Release -DCPACK_OS=${{ matrix.os.name }} -DCPACK_PLASMA_VERSION=${{ matrix.plasma_version }}"
           if [[ "${{ matrix.plasma_version }}" == "plasma6" ]]; then
             CMAKE_ARGS="$CMAKE_ARGS -DBUILD_WITH_QT6=ON"
           else
